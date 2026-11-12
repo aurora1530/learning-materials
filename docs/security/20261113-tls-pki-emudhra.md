@@ -158,6 +158,10 @@ CAが不正な証明書を発行しても、その発行内容を外から調べ
 
 不正発行と分かった場合は、CAへ失効を求め、必要に応じてブラウザなどのルートCA採用・管理担当へ報告する。記録が公開されるだけで、不正発行の判定や失効まで自動的に行われるわけではない。発行内容を監視し、調べ、対応する人やサービスが必要である。[RFC 6962の5.3節と7.2節][S10]
 
+### 証明書に記載したドメイン名も公開される
+
+CTログでは、証明書に記載したドメイン名も公開される。公開Web用の証明書へ管理画面や開発環境のドメイン名を記載すると、その名前をCTログから知られる。URLを案内していないことを、アクセス制限の代わりにしてはならない。[Chromeのサイト運用者向け説明][S28][^ct-names]
+
 ### 証明書や事前証明書をログへ提出してSCTを取得する
 
 CTログへの提出には、完成した証明書を送る方法と、発行前に事前証明書を送る方法がある。事前証明書は、発行予定の証明書に入れるドメイン名や公開鍵などを記載し、CAがログへの提出用に作成する証明書である。利用者とのTLS接続に使う最終的な証明書とは異なる。[RFC 6962の3.1節][S10]
@@ -373,6 +377,8 @@ CAの権限が広いからこそ、攻撃者には、その権限を得るため
 
 [^sct-delivery]: RFC 6962は、証明書への埋め込み、TLS拡張、OCSP Staplingによる提示を定義している。ただし、提示方法の対応状況はブラウザにより異なる。Chrome 148以降はOCSP応答内のSCTをCTポリシーへの適合に使わないため、本文と図では証明書への埋め込みとTLS拡張を扱う。[RFC 6962の3.3節][S10] [ChromeのCTポリシー][S11]
 
+[^ct-names]: すべてのドメイン名がCTへ列挙されるわけではない。例えば `*.example.com` というワイルドカード名だけを記載した証明書からは、個別の `admin.example.com` などの名前は分からない。また、CTを使わない組織内専用CAの証明書は、この公開の対象ではない。[Chromeのサイト運用者向け説明][S28]
+
 [^constraints]: 中間CAのnameConstraintsなどにより、チェーンの検証時に受け入れる名前の範囲は制限できる。本文では、その制限の範囲に対象ドメイン名が含まれるCAを扱う。[RFC 5280の4.2.1.10節][S8]
 
 [^dane]: DANEでは、DNSSECで検証可能なTLSAレコードにより、ドメインの管理者が証明書や鍵との結び付きを公開する。クライアントの対応と、DNSSECへの信頼が必要になる。[RFC 6698][S17]
@@ -407,6 +413,7 @@ CAの権限が広いからこそ、攻撃者には、その権限を得るため
 22. [Node.js 24.22.1の変更内容][S25]。2026年10月21日公表。公開鍵の遮断とルート証明書の更新。
 23. [Chrome’s CT Log Lists][S26]。Chromeに組み込まれるCTログ一覧と、そのデータ形式。
 24. [Jxck: eMudhra のインシデントは Web にとって何を意味するのか][S27]。2026年10月25日公表。HSMによるCA鍵の保護、鍵生成手順と監査への批判、Web PKI全体への影響。
+25. [Certificate Transparency for Site Operators][S28]。Domain Privacy節。CTによるドメイン名の公開と、ワイルドカード証明書・組織内専用CAとの違い。
 
 [S1]: https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/
 [S2]: https://blog.google/security/protecting-chrome-and-android-users-from-compromised-emudhra-intermediate-ca-certificates/
@@ -417,6 +424,7 @@ CAの権限が広いからこそ、攻撃者には、その権限を得るため
 [S4c82]: https://bugzilla.mozilla.org/show_bug.cgi?id=2083449#c82
 [S26]: https://googlechrome.github.io/CertificateTransparency/log_lists.html
 [S27]: https://blog.jxck.io/entries/2026-10-25/emudhra.html
+[S28]: https://googlechrome.github.io/CertificateTransparency/site_operators.html
 [S5]: https://emudhra.com/en/post/certificate-security-incident
 [S6]: https://go.dev/blog/emudhra-incident
 [S7]: https://www.rfc-editor.org/rfc/rfc8446.html
